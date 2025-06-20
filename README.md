@@ -1,130 +1,90 @@
 # 📘 Linear & Logistic Regression
-
-This chapter introduces two key supervised learning models: **Linear Regression** and **Logistic Regression**, covering both theoretical foundations and practical implementation using Python.
-
 ---
 
 ## 📑 Table of Contents
 1. [Linear Regression](#linear-regression)
-    - [Key Concepts](#key-concepts)
-    - [Loss Functions](#loss-functions)
-    - [Model Solving Methods](#model-solving-methods)
-    - [Demo: Predicting Motor Current](#demo-predicting-motor-current)
 2. [Logistic Regression](#logistic-regression)
-    - [Key Concepts](#key-concepts-1)
-    - [Loss Function](#loss-function)
-    - [Demo: Iris Flower Classification](#demo-iris-flower-classification)
 3. [Model Parameters, Attributes, and Methods](#model-parameters-attributes-and-methods)
 4. [Conclusion](#conclusion)
 
----
 
 ## Linear Regression
 
+Linear regression is a type of statistical model used to construct a linear relationship between one or more independent variables and a dependent variable.\
+When there is only one independent variable, it is called **simple linear regression**.\
+When there are multiple independent variables, it is called **multiple linear regression**.
+
 ### Key Concepts
-- Used for modeling the relationship between a dependent variable \( y \) and one or more independent variables \( x \).
-- **Model formula**:
-  \[
-  y = ax + b
-  \]
+- Used for modeling the relationship between a dependent variable ($y$) and one or more independent variables ($x$).
+- Model formula:
+  $$y = ax + b$$
+
+  Where:
+    $y$ is the dependent variable,
+
+    $x$ is the independent variable,
+
+    $a$ is the slope (representing the effect of changes in $x$ on $y$),
+
+    $b$ is the intercept (the value of $y$ when $x$ is zero).
 
 ### Loss Functions
+
+In linear regression, our goal is to find the most suitable parameters aa and bb for the model.
+This involves the use of a loss function, which measures the difference between the predicted value and the actual observed value.\
+This difference is called the **residual**.\
+Our objective is to minimize this residual.\
+Commonly used loss functions include **Mean Absolute Error (MAE)** and **Mean Squared Error (MSE)**.
+
 - **Mean Absolute Error (MAE)**:
+MAE is the average of the absolute differences between the predicted values and the actual observed values.
+For each sample ii, the MAE is calculated using the following formula:
   $$
-  \[
   \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
-  \]
   $$
 - **Mean Squared Error (MSE)**:
-  \[
+MSE is the average of the squared differences between the actual observed values and the predicted values.
+Compared to MAE, MSE gives more weight to larger errors. The formula for calculating MSE is as follows:
+  $$
   \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-  \]
+  $$
 
 ### Model Solving Methods
 - **Closed-form** (Least Squares):
-  \[
+When the number of features is relatively small, the closed-form solution is generally more suitable.
+  $$
   \theta = (X^T X)^{-1} X^T y
-  \]
+  $$
 - **Gradient Descent**:
-  \[
+When the number of features is large, gradient descent becomes a more flexible and widely applicable solution.
+  $$
   \theta_j := \theta_j - \eta \frac{\partial \text{Loss}}{\partial \theta_j}
-  \]
+  $$
 
-### Demo: Predicting Motor Current
-```python
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-import pandas as pd
 
-df = pd.read_csv("auto_mpg.csv")
-X = df[['I_y', 'PF', 'e_PF', 'd_if']].values
-y = df['I_f'].values
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-scaler = MinMaxScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-model = LinearRegression()
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-
-print("MSE:", mean_squared_error(y_test, y_pred))
-```
-
----
 
 ## Logistic Regression
 
 ### Key Concepts
 - Used for classification tasks.
 - **Sigmoid function**:
-  \[
+  $$
   \sigma(z) = \frac{1}{1 + e^{-z}}
-  \]
+  $$
 - **Model equation**:
-  \[
+  $$
   P(Y=1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \cdots + \beta_n x_n)}}
-  \]
+  $$
 - **Multi-class support** via:
   - One-vs-Rest (OvR)
   - Many-vs-Many (MvM)
 
 ### Loss Function
 - **Cross Entropy**:
-  \[
+  $$
   \text{Loss} = -[y \log(\hat{y}) + (1 - y) \log(1 - \hat{y})]
-  \]
+  $$
 
-### Demo: Iris Flower Classification
-```python
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-
-iris = load_iris()
-X, y = iris.data, iris.target
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-model = LogisticRegression(multi_class='auto', solver='liblinear', random_state=42)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-
-print("Train Accuracy:", model.score(X_train, y_train))
-print("Test Accuracy:", model.score(X_test, y_test))
-```
-
----
 
 ## Model Parameters, Attributes, and Methods
 
@@ -144,7 +104,6 @@ print("Test Accuracy:", model.score(X_test, y_test))
 |              | `predict_proba(X)`| Predict class probabilities |
 |              | `score(X, y)`    | Accuracy score |
 
----
 
 ## Conclusion
 
