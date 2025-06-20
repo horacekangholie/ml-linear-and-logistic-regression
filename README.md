@@ -30,9 +30,11 @@ This chapter introduces two key supervised learning models: **Linear Regression*
 
 ### Loss Functions
 - **Mean Absolute Error (MAE)**:
+  $$
   \[
   \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
   \]
+  $$
 - **Mean Squared Error (MSE)**:
   \[
   \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
