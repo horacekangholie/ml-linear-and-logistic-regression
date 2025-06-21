@@ -1,112 +1,280 @@
-# 📘 Linear & Logistic Regression
+# 📘 Linear Regression
+
+## 📌 Introduction
+
+**Linear Regression** is a **supervised learning algorithm** used to model the relationship between a **dependent variable** and one or more **independent variables** by fitting a linear equation to observed data. It is one of the simplest and most widely used regression techniques in machine learning and statistics.
+
+### 🔑 Key Concepts
+
+-   **Model formula**:
+
+    $y=ax+b$
+
+-   **Loss functions**:
+
+    -   **MAE (Mean Absolute Error)**
+
+        $MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$
+    
+    -   **MSE (Mean Squared Error)**
+        
+        $MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$
+
+-   **Model training methods**:
+
+    -   **Closed-form solution** (Normal Equation):
+        
+        $\theta = (X^T X)^{-1} X^T y$
+    
+    -   **Gradient Descent**:
+        
+        $\theta_j := \theta_j - \eta \frac{\partial}{\partial \theta_j} \text{Loss}$
+
+## ⚙️ What the Model Does
+
+**Goal**: Model the relationship between a continuous target variable $y$ and one or more input features $x$.    
+
+## 🚧 Limitations
+
+| Limitation                             | Description |
+|----------------------------------------|-------------|
+| Assumes Linearity                      | Fails when the relationship is nonlinear. |
+| Sensitive to Outliers                  | Outliers can significantly affect the fitted model. |
+| Multicollinearity                      | Highly correlated features can distort predictions. |
+| No Automatic Feature Selection         | All features contribute unless manually selected or regularized. |
+
 ---
 
-## 📑 Table of Contents
-1. [Linear Regression](#linear-regression)
-2. [Logistic Regression](#logistic-regression)
-3. [Model Parameters, Attributes, and Methods](#model-parameters-attributes-and-methods)
-4. [Conclusion](#conclusion)
+## 🔧 Common Parameters, Attributes, and Methods
+
+### Parameters (in `sklearn.linear_model.LinearRegression`)
+
+| Parameter         | Description |
+|------------------|-------------|
+| `fit_intercept`   | Whether to calculate the intercept for the model. |
+| `normalize`       | If `True`, the regressors are normalized before regression. (deprecated in latest versions) |
+| `n_jobs`          | Number of jobs to use for computation. |
+
+### Attributes (after fitting)
+
+| Attribute          | Description |
+|-------------------|-------------|
+| `coef_`            | Estimated coefficients for the input features. |
+| `intercept_`       | Intercept (bias) term of the model. |
+| `rank_`            | Rank of the coefficient matrix. |
+| `singular_`        | Singular values of the feature matrix. |
+
+### Methods
+
+| Method             | Description |
+|-------------------|-------------|
+| `fit(X, y)`        | Fits the model to the data. |
+| `predict(X)`       | Predicts target values using the fitted model. |
+| `score(X, y)`      | Returns the \( R^2 \) coefficient of determination of the prediction. |
+
+---
+
+## 📏 Evaluation Metrics
+
+### 1. Mean Squared Error (MSE)
+
+$\text{MSE} = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2$
+
+- Penalizes larger errors more than smaller ones.
+- Lower is better.
+
+### 2. Root Mean Squared Error (RMSE)
+
+$\text{RMSE} = \sqrt{\text{MSE}}$
+
+- Easier to interpret as it’s in the same unit as the target variable.
+
+### 3. Mean Absolute Error (MAE)
+
+$\text{MAE} = \frac{1}{n} \sum_{i=1}^n |y_i - \hat{y}_i|$
+
+- Measures average magnitude of errors.
+- More robust to outliers than MSE.
+
+### 4. R-squared ( $R^2$ )
+
+$R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}$
+
+- Measures proportion of variance explained by the model.
+- Closer to 1 means better fit.
+
+---
+
+## 🧪 Example - Predicting Excitation Current in Synchronous Machines
+
+The **Synchronous Machine Dataset** from the UCI Machine Learning Repository contains measurements related to the operation of a synchronous machine (a type of AC electric motor).
+
+### 🔍 Dataset Description:
+
+-   **Instances**: 557 samples
+
+-   **Features**:
+
+    -   `I_y`: Load current
+
+    -   `PF`: Power factor
+
+    -   `e_PF`: Power factor error
+
+    -   `d_If`: Change in excitation current
+
+-   **Target**:
+
+    -   `I_f`: Excitation current of the synchronous machine
+
+### 🎯 Purpose:
+
+The dataset aims to **model and predict the excitation current** (`I_f`) based on other measurable electrical parameters.\
+This supports performance optimization and energy efficiency in industrial motor control.
+
+[Demo code](/notebooks/linear_regression.ipynb)
 
 
-## Linear Regression
 
-Linear regression is a type of statistical model used to construct a linear relationship between one or more independent variables and a dependent variable.\
-When there is only one independent variable, it is called **simple linear regression**.\
-When there are multiple independent variables, it is called **multiple linear regression**.
-
-### Key Concepts
-- Used for modeling the relationship between a dependent variable ($y$) and one or more independent variables ($x$).
-- Model formula:
-  $$y = ax + b$$
-
-  Where:
-    $y$ is the dependent variable,
-
-    $x$ is the independent variable,
-
-    $a$ is the slope (representing the effect of changes in $x$ on $y$),
-
-    $b$ is the intercept (the value of $y$ when $x$ is zero).
-
-### Loss Functions
-
-In linear regression, our goal is to find the most suitable parameters aa and bb for the model.
-This involves the use of a loss function, which measures the difference between the predicted value and the actual observed value.\
-This difference is called the **residual**.\
-Our objective is to minimize this residual.\
-Commonly used loss functions include **Mean Absolute Error (MAE)** and **Mean Squared Error (MSE)**.
-
-- **Mean Absolute Error (MAE)**:
-MAE is the average of the absolute differences between the predicted values and the actual observed values.
-For each sample ii, the MAE is calculated using the following formula:
-  $$
-  \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
-  $$
-- **Mean Squared Error (MSE)**:
-MSE is the average of the squared differences between the actual observed values and the predicted values.
-Compared to MAE, MSE gives more weight to larger errors. The formula for calculating MSE is as follows:
-  $$
-  \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-  $$
-
-### Model Solving Methods
-- **Closed-form** (Least Squares):
-When the number of features is relatively small, the closed-form solution is generally more suitable.
-  $$
-  \theta = (X^T X)^{-1} X^T y
-  $$
-- **Gradient Descent**:
-When the number of features is large, gradient descent becomes a more flexible and widely applicable solution.
-  $$
-  \theta_j := \theta_j - \eta \frac{\partial \text{Loss}}{\partial \theta_j}
-  $$
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 
 
-## Logistic Regression
+# 📘 Logistic Regression
 
-### Key Concepts
-- Used for classification tasks.
-- **Sigmoid function**:
-  $$
-  \sigma(z) = \frac{1}{1 + e^{-z}}
-  $$
-- **Model equation**:
-  $$
-  P(Y=1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \cdots + \beta_n x_n)}}
-  $$
-- **Multi-class support** via:
-  - One-vs-Rest (OvR)
-  - Many-vs-Many (MvM)
+## 📌 Introduction
 
-### Loss Function
-- **Cross Entropy**:
-  $$
-  \text{Loss} = -[y \log(\hat{y}) + (1 - y) \log(1 - \hat{y})]
-  $$
+**Logistic Regression** is a **supervised learning algorithm** used for **binary classification problems**. It models the **probability** that a given input belongs to a particular class using the **logistic (sigmoid) function**. Despite its name, it is actually a classification algorithm, not a regression one.
 
+### 🔑 Key Concepts
 
-## Model Parameters, Attributes, and Methods
+-   **Use Case**: Classify binary or multi-class categorical outcomes.
 
-| Category     | Name             | Description |
-|--------------|------------------|-------------|
-| Parameter    | `penalty`        | Regularization type (`l1`, `l2`) |
-|              | `C`              | Inverse of regularization strength |
-|              | `solver`         | Optimization algorithm |
-|              | `multi_class`    | Classification strategy (`ovr`, `multinomial`) |
-|              | `max_iter`       | Maximum number of iterations |
-|              | `class_weight`   | Handling imbalanced classes |
-|              | `random_state`   | Random seed for reproducibility |
-| Attribute    | `coef_`          | Model coefficients |
-|              | `intercept_`     | Model bias |
-| Method       | `fit(X, y)`      | Train the model |
-|              | `predict(X)`     | Predict class labels |
-|              | `predict_proba(X)`| Predict class probabilities |
-|              | `score(X, y)`    | Accuracy score |
+-   **Logistic (Sigmoid) Function**:
+    
+    $\sigma(z) = \frac{1}{1 + e^{-z}}$
+    
+    where, $\quad z = w_1x_1 + \dots + w_nx_n + b$
+    
+
+-   **Loss Function (Cross Entropy)**:
+    
+    $\text{Loss} = -\left[ y \log(\hat{y}) + (1 - y)\log(1 - \hat{y}) \right]$
+
+-   **Multiclass Strategy**:
+
+    -   `OvR` (One-vs-Rest)
+
+    -   `MvM` (Many-vs-Many)
 
 
-## Conclusion
+## ⚙️ What the Model Does
 
-- **Linear Regression** is suitable for regression tasks and optimized via closed-form or gradient descent.
-- **Logistic Regression** is effective for binary/multiclass classification using sigmoid and cross-entropy loss.
-- The chapter emphasized model training, feature scaling, evaluation (MSE, accuracy, confusion matrix), and Python implementation.
+Logistic Regression outputs a probability between 0 and 1. By applying a **threshold** (usually 0.5), it assigns a class label.
+
+Variants:
+- **Binary logistic regression**: 2 classes.
+- **Multinomial logistic regression**: more than 2 classes (multiclass).
+- **One-vs-rest strategy**: default approach in scikit-learn for multiclass.
+
+## 🚧 Limitations
+
+| Limitation                            | Description |
+|---------------------------------------|-------------|
+| Assumes Linear Decision Boundary      | Only effective if classes are linearly separable. |
+| Not Robust to Multicollinearity       | Highly correlated features can destabilize predictions. |
+| Sensitive to Outliers                 | Can affect the decision boundary. |
+| Cannot Capture Complex Relationships  | Nonlinear boundaries require more advanced models or feature engineering. |
+
+---
+
+## 🔧 Common Parameters, Attributes, and Methods
+
+### Parameters (in `sklearn.linear_model.LogisticRegression`)
+
+| Parameter         | Description |
+|------------------|-------------|
+| `penalty`         | Regularization type (`'l2'`, `'l1'`, `'elasticnet'`, `'none'`). |
+| `C`               | Inverse of regularization strength (smaller = stronger regularization). |
+| `solver`          | Optimization algorithm (`'liblinear'`, `'saga'`, `'newton-cg'`, etc.). |
+| `max_iter`        | Maximum iterations for solver convergence. |
+| `multi_class`     | `'auto'`, `'ovr'` (one-vs-rest), or `'multinomial'`. |
+| `random_state`    | For reproducibility. |
+
+### Attributes (after fitting)
+
+| Attribute          | Description |
+|-------------------|-------------|
+| `coef_`            | Coefficients for features. |
+| `intercept_`       | Intercept term(s). |
+| `classes_`         | Class labels. |
+| `n_iter_`          | Number of iterations taken by the solver to converge. |
+
+### Methods
+
+| Method             | Description |
+|-------------------|-------------|
+| `fit(X, y)`        | Fit the model to the training data. |
+| `predict(X)`       | Predict class labels. |
+| `predict_proba(X)` | Predict class probabilities. |
+| `score(X, y)`      | Return accuracy score on the given test data. |
+| `decision_function(X)` | Distance of samples to decision boundary. |
+
+---
+
+## 📏 Evaluation Metrics
+
+### 1. Accuracy
+
+$\text{Accuracy} = \frac{\text{correct predictions}}{\text{total predictions}}$
+
+- Good baseline for balanced datasets.
+
+### 2. Precision, Recall, F1 Score
+| Metric     | Formula | Interpretation |
+|------------|---------|----------------|
+| Precision  | $\frac{TP}{TP + FP}$ | How many predicted positives were actually positive. |
+| Recall     | $\frac{TP}{TP + FN}$ | How many actual positives were correctly predicted. |
+| F1 Score   | $2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}$ | Harmonic mean of precision and recall. |
+
+### 3. ROC-AUC
+- Measures model’s ability to distinguish between classes.
+- AUC near 1 means excellent classifier.
+
+---
+
+## 🧪 Example - Iris Flower Classification
+
+The **Iris flower dataset** is a classic dataset used for **multi-class classification**, making it ideal for demonstrating **logistic regression**.
+
+### 🔍 Dataset Description:
+
+-   **Samples**: 150
+
+-   **Classes**: 3 species of Iris flowers:
+
+    -   *Setosa*
+
+    -   *Versicolor*
+
+    -   *Virginica*
+
+-   **Features** (all numerical):
+
+    -   Sepal length
+
+    -   Sepal width
+
+    -   Petal length
+
+    -   Petal width
+
+### 🎯 Use in Logistic Regression:
+
+The goal is to use the 4 features to **predict the species** of a flower.\
+Since there are 3 classes, logistic regression applies a **multinomial (or one-vs-rest)** strategy to model and classify the flower species.
+
+[Demo code](/notebooks/logistic_regression.ipynb)
+
+
+
